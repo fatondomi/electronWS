@@ -11,6 +11,7 @@ app.on('ready',()=>{
 		width:1200,
 		frame:true,
 		resizable:true,
+		autoHideMenuBar:true
 	});
 	//win.setMenu(null);
 	win.loadURL("file:///./resources/ui.html");
