@@ -4,7 +4,7 @@ let tables = ["familjet","aktivitetet"];
 
 function populateNavbarWithTables()
 {
-    let navBar = document.getElementById("navbar");
+    let navBar = document.getElementById("navbarList");
 
     for(tableIndex in tables)
     {

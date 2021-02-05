@@ -11,13 +11,54 @@
     </head>
 
     <body onload="populateNavbarWithTables();">
+        
+        <center>logo</center>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a class="navbar-brand" href="#">Navbar</a>
             <div class="collapse navbar-collapse">
-              <ul class="navbar-nav" id="navbar">
-              </ul>
+                <ul class="navbar-nav" id="navbarList">
+                </ul>
             </div>
         </nav>
+
+        <div class="container-fluid">
+            <center>
+                <div class="form-group">
+                    <label for="queryBox">Query Search</label>
+                    <textarea class="form-control rounded-5 pr-2" id="queryBox" rows="3"></textarea>
+                </div>
+            </center>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">First</th>
+                <th scope="col">Last</th>
+                <th scope="col">Handle</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>@fat</td>
+              </tr>
+              <tr>
+                <th scope="row">3</th>
+                <td>Larry</td>
+                <td>the Bird</td>
+                <td>@twitter</td>
+              </tr>
+            </tbody>
+        </table>
         <script src="bootstrap.min.js"></script>
         <script src="uiFun.js"></script>
     </body>
