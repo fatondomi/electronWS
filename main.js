@@ -11,7 +11,10 @@ app.on('ready',()=>{
 		width:1200,
 		frame:true,
 		resizable:true,
-		autoHideMenuBar:true
+		autoHideMenuBar:true,
+        webPreferences: {
+            nodeIntegration: true
+        }
 	});
 	//win.setMenu(null);
 	win.loadURL("file:///./resources/ui.html");
