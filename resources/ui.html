@@ -22,8 +22,12 @@
 
         <div class="container-fluid">
             <center>
-                <div class="form-group">
-                    <label for="queryBox">Query Search</label>
+                <div class="form-group" style="padding-top: 5px;">
+                    <row>
+                        <label for="queryBox">Query Box</label>
+                        <button type="button" class="btn btn-primary btn-sm btn-outline-secondary" id="runBtn">Run</button>
+                        <button type="button" class="btn btn-primary btn-sm btn-outline-info">Help</button>
+                    </row>
                     <textarea class="form-control rounded-5 pr-2" id="queryBox" rows="3"></textarea>
                 </div>
             </center>
@@ -31,19 +35,11 @@
 
         <table class="table table-striped">
             <thead id="mainTableHead">
-                <!--
-
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">First</th>
-                        <th scope="col">Last</th>
-                        <th scope="col">Handle</th>
-                    </tr>
-                -->
             </thead>
             <tbody id="mainTableBody">
             </tbody>
         </table>
+
         <script src="bootstrap.min.js"></script>
         <script src="uiFun.js"></script>
     </body>

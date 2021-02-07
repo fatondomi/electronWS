@@ -21,6 +21,9 @@ function setupPage()
         
         populateTableWithQuery("SELECT * FROM "+tableSelected);
     });
+
+    let runBtn = document.getElementById("runBtn");
+    runBtn.addEventListener("click",runBtnClicked);
 }
 
 function populateNavbarWithTable(tableNameStr)
@@ -85,7 +88,11 @@ function populateTableWithQuery(queryStr)
     });
 }
 
-
+function runBtnClicked()
+{
+    let queryInput = document.getElementById("queryBox").value;
+    populateTableWithQuery(queryInput);
+}
 //db.run("CREATE TABLE tables (id INTEGER PRIMARY KEY,tablename TEXT)");
 //db.run("INSERT INTO tables VALUES(NULL,\"familjet\")");
 //db.run("INSERT INTO tables VALUES(NULL,\"aktivitetet\")");
