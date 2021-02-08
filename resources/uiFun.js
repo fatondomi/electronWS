@@ -7,6 +7,7 @@ let db = new sqlite3.Database('C:/Users/ASUS/Documents/electronWS/resources/pasu
 
 let tables = [];
 let tableSelected = "familjet";
+let ctrlDown = false;
 
 function setupPage()
 {
@@ -19,11 +20,13 @@ function setupPage()
             populateNavbarWithTable(row.tablename);
         });
         
-        populateTableWithQuery("SELECT * FROM "+tableSelected);
+        populateTableWithQuery("SELECT * FROM "+tableSelected+" ORDER BY 1 DESC");
     });
 
     let runBtn = document.getElementById("runBtn");
     runBtn.addEventListener("click",runBtnClicked);
+    //let qBox = document.getElementById("queryBox");
+    //qBox.onkeydown = (e)=>{e.which}
 }
 
 function populateNavbarWithTable(tableNameStr)
@@ -36,7 +39,7 @@ function populateNavbarWithTable(tableNameStr)
     let newA = document.createElement("a");
     newA.classList.add("nav-link");
     newA.appendChild(document.createTextNode(tableNameStr));
-    newA.onclick = ()=>{populateTableWithQuery("SELECT * FROM "+tableNameStr)};
+    newA.onclick = ()=>{populateTableWithQuery("SELECT * FROM "+tableNameStr+" ORDER BY 1 DESC")};
     
     newLi.appendChild(newA);
     navBar.appendChild(newLi);
@@ -50,7 +53,7 @@ function populateTableWithQuery(queryStr)
 
     db.each(queryStr, function(err, row) {
 
-        if(err){ console.log("populating table with query failed\n"+err); return;}
+        if(err){ showErrorOnTable(err); return;}
 
         if(!propsFilled)
         {
@@ -92,6 +95,33 @@ function runBtnClicked()
 {
     let queryInput = document.getElementById("queryBox").value;
     populateTableWithQuery(queryInput);
+}
+
+function showErrorOnTable(errStr)
+{
+    let tableBody = document.getElementById("mainTableBody");
+    let tableHead = document.getElementById("mainTableHead");
+
+    while(tableHead.firstChild){ tableHead.removeChild(tableHead.firstChild); }
+    while(tableBody.firstChild){ tableBody.removeChild(tableBody.firstChild); }
+
+    let newRow = document.createElement("tr");
+    
+    let newHead = document.createElement("th");
+    newHead.scope = "col";
+    newHead.innerHTML = " Query ERROR ";
+    newRow.appendChild(newHead); 
+
+    tableHead.appendChild(newRow);
+
+    let newRow2 = document.createElement("tr");
+    
+    let newData = document.createElement("td");
+    newData.innerHTML = errStr;
+
+    newRow2.appendChild(newData);
+
+    tableBody.appendChild(newRow2);
 }
 //db.run("CREATE TABLE tables (id INTEGER PRIMARY KEY,tablename TEXT)");
 //db.run("INSERT INTO tables VALUES(NULL,\"familjet\")");
