@@ -8,6 +8,10 @@ let db = new sqlite3.Database('C:/Users/ASUS/Documents/electronWS/resources/pasu
 let tables = [];
 let tableSelected = "familjet";
 let ctrlDown = false;
+let templateSwitchCounter = 0;
+let templateSwitchKeyCode = 0;
+let previousQueries = [];
+let curentTemplates = [];
 
 function setupPage()
 {
@@ -25,8 +29,21 @@ function setupPage()
 
     let runBtn = document.getElementById("runBtn");
     runBtn.addEventListener("click",runBtnClicked);
-    //let qBox = document.getElementById("queryBox");
-    //qBox.onkeydown = (e)=>{e.which}
+    let qBox = document.getElementById("queryBox");
+    qBox.onkeydown = (e)=>{
+        ctrlDown = e.ctrlKey;
+        if(ctrlDown) {
+            //db.run("select template from ")
+        }
+    };
+    qBox.onkeyup = (e)=>{
+        ctrlDown = e.ctrlKey;
+        if(!ctrlDown) { 
+            templateSwitchCounter = 0;
+            templateSwitchKeyCode = 0;
+        }
+    };
+    qBox.onkeypress = (e)=>{keyPressedHandler(e)};
 }
 
 function populateNavbarWithTable(tableNameStr)
@@ -122,6 +139,43 @@ function showErrorOnTable(errStr)
     newRow2.appendChild(newData);
 
     tableBody.appendChild(newRow2);
+}
+
+function keyPressedHandler(event)
+{
+    if(ctrlDown)
+    {
+        if(templateSwitchKeyCode != event.keycode)
+        {
+            templateSwitchCounter = 0
+            templateSwitchKeyCode = event.keycode
+        }
+
+        if(event.keycode == 83)
+        {//go through select templates 83-S
+            
+        }
+        else if(event.keycode == 73)
+        {//go through insert templates 73-I
+
+        }
+        else if(event.keycode == 85)
+        {//go through update templates 85-U
+
+        }
+        else if(event.keycode == 68)
+        {//go through delete templates 68-D
+
+        }
+        else if(event.keycode == 67)
+        {//go through create templates 68-C
+
+        }
+        else if(event.keycode == 65)
+        {//go through alter templates 65-A
+
+        }
+    }
 }
 //db.run("CREATE TABLE tables (id INTEGER PRIMARY KEY,tablename TEXT)");
 //db.run("INSERT INTO tables VALUES(NULL,\"familjet\")");
