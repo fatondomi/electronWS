@@ -3,7 +3,7 @@
 
 let navBar = document.getElementById("navbarList");
 let sqlite3 = require('sqlite3').verbose();
-let db = new sqlite3.Database('C:/Users/ASUS/Documents/electronWS/resources/pasurohuedheti.db');
+let db = new sqlite3.Database(process.execPath.split("node_modules")[0].replace("\\","/")+"resources/pasurohuedheti.db");
 
 let tables = [];
 let tableSelected = "familjet";
