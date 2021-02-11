@@ -10,7 +10,7 @@ let db = new sqlite3.Database(process.execPath.split("node_modules")[0].replace(
 let tables = [];
 let tableSelected = "familjet";
 
-let shiftDown = false;
+let altDown = false;
 let templateSwitchCounter = 0;
 let templateSwitchKeyCode = 0;
 let curentTemplates = [];
@@ -137,9 +137,9 @@ function showErrorOnTable(errStr)
 
 function onKeyDownInQBox(e)
 {
-    if(e.shiftKey && !shiftDown) {
-        shiftDown = true;
-        console.log("shift is true");
+    if(e.altKey && !altDown) {
+        altDown = true;
+        console.log("alt is down");
         previousQueryIndex = previousQueries.length;
         //db.run("select template from ")
     }
@@ -148,9 +148,9 @@ function onKeyDownInQBox(e)
 function onKeyUpInQBox(e)
 {
     onKeyPressInQBox(e);
-    if(!e.shiftKey && shiftDown) {
-        shiftDown = false;
-        console.log("shift is false");
+    if(!e.altKey && altDown) {
+        altDown = false;
+        console.log("alt is up");
         templateSwitchCounter = 0;
         templateSwitchKeyCode = 0;
     }
@@ -158,7 +158,7 @@ function onKeyUpInQBox(e)
 
 function onKeyPressInQBox(event)
 {
-    if(shiftDown)
+    if(altDown)
     {
         if(templateSwitchKeyCode != event.keycode)
         {
@@ -189,6 +189,24 @@ function onKeyPressInQBox(event)
         else if(event.keycode == 65)
         {//go through alter templates 65-A
 
+        }
+
+        if(event.keyCode == 13)
+        {
+            runBtnClicked();
+            return;
+        }
+        else if(event.keyCode == 38 && previousQueries.length > 0)
+        {//up arrow
+            previousQueryIndex = (previousQueryIndex < 1)? 0 : previousQueryIndex - 1;
+            queryBox.value = previousQueries[previousQueryIndex];
+            return;
+        }
+        else if(event.keyCode == 40 && previousQueries.length > 0)
+        {//down arrow
+            previousQueryIndex = (previousQueryIndex > previousQueries.length - 2)? previousQueries.length - 1 : previousQueryIndex + 1;
+            queryBox.value = previousQueries[previousQueryIndex];
+            return;
         }
     }
 
