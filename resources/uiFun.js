@@ -11,9 +11,10 @@ let tables = [];
 let tableSelected = "familjet";
 
 let altDown = false;
-let templateSwitchCounter = 0;
+let templateSwitchIndex = 0;
 let templateSwitchKeyCode = 0;
-let curentTemplates = [];
+let currentTemplates = {};
+let templateKeyCodes = [];
 
 let previousQueries = [];
 let previousQueryIndex = 0;
@@ -63,7 +64,7 @@ function populateTableWithQuery(queryStr)
 
     db.each(queryStr, function(err, row) {
 
-        if(err){ showErrorOnTable(err); return;}
+        if(err){ showInfoOnTable(" Query ERROR ",err); return;}
 
         if(!propsFilled)
         {
@@ -99,6 +100,11 @@ function populateTableWithQuery(queryStr)
 
         tableBody.appendChild(newRow);
     });
+
+    if(!propsFilled)
+    {
+        showInfoOnTable(" Rows Affected"," Query Went Through: " + queryStr);
+    }
 }
 
 function runBtnClicked()
@@ -108,7 +114,7 @@ function runBtnClicked()
     previousQueryIndex = previousQueries.length;
 }
 
-function showErrorOnTable(errStr)
+function showInfoOnTable(infoTitle,infoContent)
 {
     let tableBody = document.getElementById("mainTableBody");
     let tableHead = document.getElementById("mainTableHead");
@@ -120,7 +126,7 @@ function showErrorOnTable(errStr)
     
     let newHead = document.createElement("th");
     newHead.scope = "col";
-    newHead.innerHTML = " Query ERROR ";
+    newHead.innerHTML = infoTitle;
     newRow.appendChild(newHead); 
 
     tableHead.appendChild(newRow);
@@ -128,7 +134,7 @@ function showErrorOnTable(errStr)
     let newRow2 = document.createElement("tr");
     
     let newData = document.createElement("td");
-    newData.innerHTML = errStr;
+    newData.innerHTML = infoContent;
 
     newRow2.appendChild(newData);
 
@@ -137,21 +143,36 @@ function showErrorOnTable(errStr)
 
 function onKeyDownInQBox(e)
 {
-    if(e.altKey && !altDown) {
+    if(e.altKey && !altDown)
+    {
         altDown = true;
-        console.log("alt is down");
         previousQueryIndex = previousQueries.length;
-        //db.run("select template from ")
+        /*
+        currentTemplates = {};
+        db.each("select keypress from templatekeys",(err,row)=>{
+            
+            if(err){showInfoOnTable(" Template Error ",err); return;}
+            currentTemplates[row.keypress] = [];
+        })
+        for(key in currentTemplates)
+        { 
+            db.each("select keypress from templatekeys",(err,row)=>{
+
+                if(err){showInfoOnTable(" Template Error ",err); return;}
+                currentTemplates[row.keypress] = [];
+            })
+        }
+        */
     }
 }
 
 function onKeyUpInQBox(e)
 {
     onKeyPressInQBox(e);
-    if(!e.altKey && altDown) {
+    if(!e.altKey && altDown)
+    {
         altDown = false;
-        console.log("alt is up");
-        templateSwitchCounter = 0;
+        templateSwitchIndex = 0;
         templateSwitchKeyCode = 0;
     }
 }
@@ -162,33 +183,9 @@ function onKeyPressInQBox(event)
     {
         if(templateSwitchKeyCode != event.keycode)
         {
-            templateSwitchCounter = 0
+            templateSwitchIndex = 0
             templateSwitchKeyCode = event.keycode
-        }
-
-        if(event.keycode == 83)
-        {//go through select templates 83-S
-            
-        }
-        else if(event.keycode == 73)
-        {//go through insert templates 73-I
-
-        }
-        else if(event.keycode == 85)
-        {//go through update templates 85-U
-
-        }
-        else if(event.keycode == 68)
-        {//go through delete templates 68-D
-
-        }
-        else if(event.keycode == 67)
-        {//go through create templates 68-C
-
-        }
-        else if(event.keycode == 65)
-        {//go through alter templates 65-A
-
+            console.log("alt and "+event.key);
         }
 
         if(event.keyCode == 13)
@@ -209,23 +206,25 @@ function onKeyPressInQBox(event)
             return;
         }
     }
-
-    if(event.keyCode == 116)
+    else
     {
-        runBtnClicked();
-        return;
-    }
-    else if(event.keyCode == 112 && previousQueries.length > 0)
-    {//up arrow
-        previousQueryIndex = (previousQueryIndex < 1)? 0 : previousQueryIndex - 1;
-        queryBox.value = previousQueries[previousQueryIndex];
-        return;
-    }
-    else if(event.keyCode == 113 && previousQueries.length > 0)
-    {//down arrow
-        previousQueryIndex = (previousQueryIndex > previousQueries.length - 2)? previousQueries.length - 1 : previousQueryIndex + 1;
-        queryBox.value = previousQueries[previousQueryIndex];
-        return;
+        if(event.keyCode == 116)
+        {
+            runBtnClicked();
+            return;
+        }
+        else if(event.keyCode == 112 && previousQueries.length > 0)
+        {//up arrow
+            previousQueryIndex = (previousQueryIndex < 1)? 0 : previousQueryIndex - 1;
+            queryBox.value = previousQueries[previousQueryIndex];
+            return;
+        }
+        else if(event.keyCode == 113 && previousQueries.length > 0)
+        {//down arrow
+            previousQueryIndex = (previousQueryIndex > previousQueries.length - 2)? previousQueries.length - 1 : previousQueryIndex + 1;
+            queryBox.value = previousQueries[previousQueryIndex];
+            return;
+        }
     }
 }
 //db.run("CREATE TABLE tables (id INTEGER PRIMARY KEY,tablename TEXT)");
