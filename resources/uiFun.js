@@ -2,16 +2,21 @@
 
 
 let navBar = document.getElementById("navbarList");
+let queryBox = document.getElementById("queryBox");
+
 let sqlite3 = require('sqlite3').verbose();
 let db = new sqlite3.Database(process.execPath.split("node_modules")[0].replace("\\","/")+"resources/pasurohuedheti.db");
 
 let tables = [];
 let tableSelected = "familjet";
-let ctrlDown = false;
+
+let shiftDown = false;
 let templateSwitchCounter = 0;
 let templateSwitchKeyCode = 0;
-let previousQueries = [];
 let curentTemplates = [];
+
+let previousQueries = [];
+let previousQueryIndex = 0;
 
 function setupPage()
 {
@@ -29,21 +34,9 @@ function setupPage()
 
     let runBtn = document.getElementById("runBtn");
     runBtn.addEventListener("click",runBtnClicked);
-    let qBox = document.getElementById("queryBox");
-    qBox.onkeydown = (e)=>{
-        ctrlDown = e.ctrlKey;
-        if(ctrlDown) {
-            //db.run("select template from ")
-        }
-    };
-    qBox.onkeyup = (e)=>{
-        ctrlDown = e.ctrlKey;
-        if(!ctrlDown) { 
-            templateSwitchCounter = 0;
-            templateSwitchKeyCode = 0;
-        }
-    };
-    qBox.onkeypress = (e)=>{keyPressedHandler(e)};
+
+    document.onkeydown = onKeyDownInQBox;
+    document.onkeyup = onKeyUpInQBox;
 }
 
 function populateNavbarWithTable(tableNameStr)
@@ -110,8 +103,9 @@ function populateTableWithQuery(queryStr)
 
 function runBtnClicked()
 {
-    let queryInput = document.getElementById("queryBox").value;
-    populateTableWithQuery(queryInput);
+    populateTableWithQuery(queryBox.value);
+    previousQueries.push(queryBox.value);
+    previousQueryIndex = previousQueries.length;
 }
 
 function showErrorOnTable(errStr)
@@ -141,9 +135,30 @@ function showErrorOnTable(errStr)
     tableBody.appendChild(newRow2);
 }
 
-function keyPressedHandler(event)
+function onKeyDownInQBox(e)
 {
-    if(ctrlDown)
+    if(e.shiftKey && !shiftDown) {
+        shiftDown = true;
+        console.log("shift is true");
+        previousQueryIndex = previousQueries.length;
+        //db.run("select template from ")
+    }
+}
+
+function onKeyUpInQBox(e)
+{
+    onKeyPressInQBox(e);
+    if(!e.shiftKey && shiftDown) {
+        shiftDown = false;
+        console.log("shift is false");
+        templateSwitchCounter = 0;
+        templateSwitchKeyCode = 0;
+    }
+}
+
+function onKeyPressInQBox(event)
+{
+    if(shiftDown)
     {
         if(templateSwitchKeyCode != event.keycode)
         {
@@ -175,6 +190,24 @@ function keyPressedHandler(event)
         {//go through alter templates 65-A
 
         }
+    }
+
+    if(event.keyCode == 116)
+    {
+        runBtnClicked();
+        return;
+    }
+    else if(event.keyCode == 112 && previousQueries.length > 0)
+    {//up arrow
+        previousQueryIndex = (previousQueryIndex < 1)? 0 : previousQueryIndex - 1;
+        queryBox.value = previousQueries[previousQueryIndex];
+        return;
+    }
+    else if(event.keyCode == 113 && previousQueries.length > 0)
+    {//down arrow
+        previousQueryIndex = (previousQueryIndex > previousQueries.length - 2)? previousQueries.length - 1 : previousQueryIndex + 1;
+        queryBox.value = previousQueries[previousQueryIndex];
+        return;
     }
 }
 //db.run("CREATE TABLE tables (id INTEGER PRIMARY KEY,tablename TEXT)");
