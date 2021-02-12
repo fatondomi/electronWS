@@ -228,9 +228,42 @@ function onKeyPressInQBox(event)
     }
 }
 
-function fadeModal()
+function fadeOutModal()
 {
-    //document
+    let modalBg = document.getElementById("modalBg");
+    fadeOutThis(modalBg);
+}
+
+function fadeOutThis(element)
+{
+    if(parseFloat(element.style.opacity) > 0)
+    {
+        console.log(element.style.opacity);
+        element.style.opacity = (parseFloat(element.style.opacity) - 0.1)+"";
+        setTimeout(fadeOutThis(element),100);
+    }
+    else
+    {
+        element.style.display = "none";
+    }
+}
+
+function fadeInModal()
+{
+    let modalBg = document.getElementById("modalBg");
+    modalBg.style.display = "flex";
+    modalBg.style.opacity = "0.00";
+    fadeInThis(modalBg);
+}
+
+function fadeInThis(element)
+{
+    if(parseFloat(element.style.opacity) < 1)
+    {
+        console.log(element.style.opacity);
+        element.style.opacity = (parseFloat(element.style.opacity) + 0.1)+"";
+        setTimeout(fadeInThis(element),100);
+    }
 }
 //db.run("CREATE TABLE tables (id INTEGER PRIMARY KEY,tablename TEXT)");
 //db.run("INSERT INTO tables VALUES(NULL,\"familjet\")");

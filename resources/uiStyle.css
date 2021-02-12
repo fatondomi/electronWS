@@ -8,13 +8,16 @@
     width:100%;
     height:100vh;
     background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
+    opacity:1.00;
 }
 
 .mymodal
 {
     background-color: white;
     width: 70%;
+    padding: 20px;
+    border-radius: 10px;
 }
