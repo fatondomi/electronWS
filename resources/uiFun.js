@@ -227,6 +227,11 @@ function onKeyPressInQBox(event)
         }
     }
 }
+
+function fadeModal()
+{
+    //document
+}
 //db.run("CREATE TABLE tables (id INTEGER PRIMARY KEY,tablename TEXT)");
 //db.run("INSERT INTO tables VALUES(NULL,\"familjet\")");
 //db.run("INSERT INTO tables VALUES(NULL,\"aktivitetet\")");
