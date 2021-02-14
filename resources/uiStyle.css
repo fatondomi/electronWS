@@ -20,4 +20,5 @@
     width: 70%;
     padding: 20px;
     border-radius: 10px;
+    overflow: auto;
 }

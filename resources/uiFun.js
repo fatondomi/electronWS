@@ -3,6 +3,7 @@
 
 let navBar = document.getElementById("navbarList");
 let queryBox = document.getElementById("queryBox");
+let modalBg = document.getElementById("modalBg");
 
 let sqlite3 = require('sqlite3').verbose();
 let db = new sqlite3.Database(process.execPath.split("node_modules")[0].replace("\\","/")+"resources/pasurohuedheti.db");
@@ -13,11 +14,14 @@ let tableSelected = "familjet";
 let altDown = false;
 let templateSwitchIndex = 0;
 let templateSwitchKeyCode = 0;
-let currentTemplates = {};
-let templateKeyCodes = [];
+let queryTemplates = {};
+let bigQuery = "";
 
 let previousQueries = [];
 let previousQueryIndex = 0;
+
+let fadeInTimer = null;
+let fadeOutTimer = null;
 
 function setupPage()
 {
@@ -61,50 +65,55 @@ function populateTableWithQuery(queryStr)
     let propsFilled = false;
     let tableBody = document.getElementById("mainTableBody");
     let tableHead = document.getElementById("mainTableHead");
+    
+    db.serialize(()=>{
 
-    db.each(queryStr, function(err, row) {
-
-        if(err){ showInfoOnTable(" Query ERROR ",err); return;}
-
-        if(!propsFilled)
-        {
-            while(tableHead.firstChild){ tableHead.removeChild(tableHead.firstChild); }
-            while(tableBody.firstChild){ tableBody.removeChild(tableBody.firstChild); }
-
+        db.each(queryStr, function(err, row) {
+            
+            if(err){ showInfoOnTable(" Query ERROR ",err); return;}
+            
+            if(!propsFilled)
+            {
+                while(tableHead.firstChild){ tableHead.removeChild(tableHead.firstChild); }
+                while(tableBody.firstChild){ tableBody.removeChild(tableBody.firstChild); }
+                
+                let newRow = document.createElement("tr");
+                
+                for(let key in row)
+                {
+                    let newHead = document.createElement("th");
+                    newHead.scope = "col";
+                    newHead.innerHTML = key;
+                    
+                    newRow.appendChild(newHead);
+                }
+                
+                tableHead.appendChild(newRow);
+                
+                propsFilled = true;
+            }
+            
             let newRow = document.createElement("tr");
             
             for(let key in row)
             {
-                let newHead = document.createElement("th");
-                newHead.scope = "col";
-                newHead.innerHTML = key;
-
-                newRow.appendChild(newHead);
+                let newData = document.createElement("td");
+                
+                newData.innerHTML = row[key];
+                
+                newRow.appendChild(newData);
             }
-
-            tableHead.appendChild(newRow);
-
-            propsFilled = true;
-        }
+            
+            tableBody.appendChild(newRow);
+        });
         
-        let newRow = document.createElement("tr");
-
-        for(let key in row)
-        {
-            let newData = document.createElement("td");
-
-            newData.innerHTML = row[key];
-
-            newRow.appendChild(newData);
-        }
-
-        tableBody.appendChild(newRow);
+        db.get("select 1",(err,row)=>{
+            if(!propsFilled)
+            {
+                showInfoOnTable(" Rows Affected"," Query Went Through: " + queryStr);
+            }
+        });
     });
-
-    if(!propsFilled)
-    {
-        showInfoOnTable(" Rows Affected"," Query Went Through: " + queryStr);
-    }
 }
 
 function runBtnClicked()
@@ -147,22 +156,25 @@ function onKeyDownInQBox(e)
     {
         altDown = true;
         previousQueryIndex = previousQueries.length;
-        /*
-        currentTemplates = {};
-        db.each("select keypress from templatekeys",(err,row)=>{
-            
-            if(err){showInfoOnTable(" Template Error ",err); return;}
-            currentTemplates[row.keypress] = [];
-        })
-        for(key in currentTemplates)
-        { 
-            db.each("select keypress from templatekeys",(err,row)=>{
+        queryTemplates = {};
 
+        db.all("select keypress from templatekeys",(errs,rows)=>{
+
+            if(errs){showInfoOnTable(" Template Error ",errs); return;}
+            
+            bigQuery = "";
+            for(i in rows)
+            {
+                queryTemplates[rows[i].keypress] = [];
+                bigQuery += " union select '" + rows[i].keypress + "' as key, template from " + rows[i].keypress + "templates";
+            }
+            bigQuery = bigQuery.substring(7,bigQuery.length);
+            
+            db.each(bigQuery,(err,row)=>{
                 if(err){showInfoOnTable(" Template Error ",err); return;}
-                currentTemplates[row.keypress] = [];
-            })
-        }
-        */
+                queryTemplates[row.key].push(row.template);
+            });
+        });
     }
 }
 
@@ -185,7 +197,13 @@ function onKeyPressInQBox(event)
         {
             templateSwitchIndex = 0
             templateSwitchKeyCode = event.keycode
-            console.log("alt and "+event.key);
+        }
+        
+        if(queryTemplates[event.key] && queryTemplates[event.key].length > 0)
+        {
+            queryBox.value = queryTemplates[event.key][templateSwitchIndex];
+            templateSwitchIndex = (templateSwitchIndex + 2 > queryTemplates[event.key].length)? 0 : templateSwitchIndex + 1;
+            return;
         }
 
         if(event.keyCode == 13)
@@ -230,39 +248,38 @@ function onKeyPressInQBox(event)
 
 function fadeOutModal()
 {
-    let modalBg = document.getElementById("modalBg");
-    fadeOutThis(modalBg);
+    fadeOutTimer = setInterval(()=>{fadeOutThis(modalBg);},25);
 }
 
 function fadeOutThis(element)
 {
     if(parseFloat(element.style.opacity) > 0)
     {
-        console.log(element.style.opacity);
         element.style.opacity = (parseFloat(element.style.opacity) - 0.1)+"";
-        setTimeout(fadeOutThis(element),100);
     }
     else
     {
         element.style.display = "none";
+        clearInterval(fadeOutTimer);
     }
 }
 
 function fadeInModal()
 {
-    let modalBg = document.getElementById("modalBg");
     modalBg.style.display = "flex";
     modalBg.style.opacity = "0.00";
-    fadeInThis(modalBg);
+    fadeInTimer = setInterval(()=>{fadeInThis(modalBg);},25);
 }
 
 function fadeInThis(element)
 {
     if(parseFloat(element.style.opacity) < 1)
     {
-        console.log(element.style.opacity);
         element.style.opacity = (parseFloat(element.style.opacity) + 0.1)+"";
-        setTimeout(fadeInThis(element),100);
+    }
+    else
+    {
+        clearInterval(fadeInTimer);
     }
 }
 //db.run("CREATE TABLE tables (id INTEGER PRIMARY KEY,tablename TEXT)");
