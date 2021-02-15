@@ -17,5 +17,4 @@ app.on('ready',()=>{
 	});
 	win.setMenu(null);
 	win.loadURL("file:///./resources/ui.html");
-	win.webContents.openDevTools();
 });
