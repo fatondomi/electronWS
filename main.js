@@ -11,6 +11,7 @@ app.on('ready',()=>{
 		width:1200,
 		frame:true,
 		resizable:true,
+		icon:process.execPath.split("node_modules")[0].replace("\\","/")+"resources/logo.ico",
         webPreferences: {
             nodeIntegration: true
         }
